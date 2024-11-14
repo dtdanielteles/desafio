@@ -6,12 +6,12 @@ import java.time.Month;
 import java.time.Year;
 
 @Entity
-@Table(name = "PAGAMENTOS")
+@Table(name = "Pagamentos")
 public class Pagamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @Column(name = "num_cartao")
     private String numCartao;
@@ -36,11 +36,11 @@ public class Pagamento {
     public Pagamento() {
     }
 
-    public Pagamento(Long id) {
+    public Pagamento(int id) {
         this.id = id;
     }
 
-    public Pagamento(long id, String numCartao, String cpfCnpjCliente, int mesVencCartao, int anoVencCartao, String cvv, BigDecimal valorPagamento, int tipoPessoa) {
+    public Pagamento(int id, String numCartao, String cpfCnpjCliente, int mesVencCartao, int anoVencCartao, String cvv, BigDecimal valorPagamento, int tipoPessoa) {
         this.id = id;
         this.numCartao = numCartao;
         this.tipoPessoa = tipoPessoa;
@@ -55,7 +55,7 @@ public class Pagamento {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

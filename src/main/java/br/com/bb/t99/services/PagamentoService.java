@@ -20,6 +20,10 @@ public class PagamentoService {
     @Inject
     PagamentoRepository pagamentoRepository;
 
+    public List<Pagamento> listar() {
+        return pagamentoRepository.listAll();
+    }
+
     void validarPagamento(Pagamento pagamento) {
 
     }
@@ -34,8 +38,15 @@ public class PagamentoService {
             pagamento.setNumCartao(tratarNumCartao(pagamento.getNumCartao()));
         }
         validarTipoPessoa(pagamento.getTipoPessoa());
-        validarMesVencCartao(pagamento.getMesVencCartao(), pagamento.getAnoVencCartao());
+        if (pagamento.getTipoPessoa() == 1) {
+            validarCpf(pagamento.getCpfCnpjCliente());
+            pagamento.setCpfCnpjCliente(tratarCpf(pagamento.getCpfCnpjCliente()));
+        } else if (pagamento.getTipoPessoa() == 2) {
+            validarCnpj(pagamento.getCpfCnpjCliente());
+            pagamento.setCpfCnpjCliente(tratarCnpj(pagamento.getCpfCnpjCliente()));
+        }
         validarAnoVencCartao(pagamento.getAnoVencCartao());
+        validarMesVencCartao(pagamento.getMesVencCartao(), pagamento.getAnoVencCartao());
         validarCvv(pagamento.getCvv());
         if (validarValorPagamento(pagamento.getValorPagamento())){
             pagamento.setValorPagamento(tratarValorPagamento(pagamento.getValorPagamento()));
@@ -44,6 +55,106 @@ public class PagamentoService {
         pagamentoRepository.persist(pagamento);
         LOGGER.info("Pagamento enviado com sucesso");
         return pagamento;
+    }
+
+    private void validarCnpj(String cpfCnpjCliente) {
+        // Remover pontuação
+        cpfCnpjCliente = cpfCnpjCliente.replaceAll("\\D", "");
+
+        // Verificar se o cpfCnpjCliente tem 14 dígitos
+        if (cpfCnpjCliente.length() != 14) {
+            throw new RuntimeException("CNPJ inválido.");
+        }
+
+        // Calcular os dígitos verificadores
+
+        char dig13, dig14;
+        int sm, i, r, num, peso;
+
+        // Calcular o primeiro dígito verificador
+        sm = 0;
+        peso = 2;
+        for (i = 11; i >= 0; i--) {
+            num = (int) (cpfCnpjCliente.charAt(i) - 48);
+            sm += (num * peso);
+            peso = (peso == 9) ? 2 : peso + 1;
+        }
+
+        r = sm % 11;
+        dig13 = (r == 0 || r == 1) ? '0' : (char) ((11 - r) + 48);
+
+        // Calcular o segundo dígito verificador
+        sm = 0;
+        peso = 2;
+        for (i = 12; i >= 0; i--) {
+            num = (int) (cpfCnpjCliente.charAt(i) - 48);
+            sm += (num * peso);
+            peso = (peso == 9) ? 2 : peso + 1;
+        }
+
+        r = sm % 11;
+        dig14 = (r == 0 || r == 1) ? '0' : (char) ((11 - r) + 48);
+
+        if (!(dig13 == cpfCnpjCliente.charAt(12)) && (dig14 == cpfCnpjCliente.charAt(13))) {
+            throw new RuntimeException("CNPJ inválido");
+        }
+    }
+
+    private String tratarCnpj(String cpfCnpjCliente) {
+        // Remover pontuação
+        cpfCnpjCliente = cpfCnpjCliente.replaceAll("\\D", "");
+
+        // Formatar o cpfCnpjCliente
+        return cpfCnpjCliente.substring(0, 2) + "." + cpfCnpjCliente.substring(2, 5) + "." + cpfCnpjCliente.substring(5, 8) + "/" + cpfCnpjCliente.substring(8, 12) + "-" + cpfCnpjCliente.substring(12, 14);
+    }
+
+    private void validarCpf(String cpfCnpjCliente) {
+        // Remover pontuação
+        cpfCnpjCliente = cpfCnpjCliente.replaceAll("\\D", "");
+
+        // Verificar se o cpfCnpjCliente tem 11 dígitos
+        if (cpfCnpjCliente.length() != 11) {
+            throw new RuntimeException("CPF inválido.");
+        }
+
+        // Verificar se todos os dígitos são iguais
+        if (cpfCnpjCliente.matches("(\\d)\\1{10}")) {
+            throw new RuntimeException("CPF inválido.");
+        }
+
+        // Calcular os dígitos verificadores
+        int sm = 0;
+        int peso = 10;
+        for (int i = 0; i < 9; i++) {
+            int num = (int) (cpfCnpjCliente.charAt(i) - 48);
+            sm += (num * peso);
+            peso -= 1;
+        }
+
+        int r = 11 - (sm % 11);
+        char dig10 = (r == 10 || r == 11) ? '0' : (char) (r + 48);
+
+        sm = 0;
+        peso = 11;
+        for (int i = 0; i < 10; i++) {
+            int num = (int) (cpfCnpjCliente.charAt(i) - 48);
+            sm += (num * peso);
+            peso -= 1;
+        }
+
+        r = 11 - (sm % 11);
+        char dig11 = (r == 10 || r == 11) ? '0' : (char) (r + 48);
+        if(!((dig10 == cpfCnpjCliente.charAt(9)) && (dig11 == cpfCnpjCliente.charAt(10)))) {
+            throw new RuntimeException("CPF Inválido.");
+        }
+    }
+
+    private String tratarCpf(String cpfCnpjCliente) {
+        // Remover pontuação
+        cpfCnpjCliente = cpfCnpjCliente.replaceAll("\\D", "");
+
+        // Formatar o cpfCnpjCliente
+        return cpfCnpjCliente.substring(0, 3) + "." + cpfCnpjCliente.substring(3, 6) + "." + cpfCnpjCliente.substring(6, 9) + "-" + cpfCnpjCliente.substring(9, 11);
     }
 
     private boolean validarValorPagamento (BigDecimal valorPagamento) {
@@ -86,10 +197,6 @@ public class PagamentoService {
         }
     }
 
-    private String tratarNumCartao (String numCartao){
-        return numCartao.replaceAll("[^\\d]", "");
-    }
-
     private static boolean validarNumCartao(String numCartao) {
         // Remover todos os caracteres não numéricos
         String numLimpo = numCartao.replaceAll("[^\\d]", "");
@@ -122,7 +229,8 @@ public class PagamentoService {
         }
     }
 
-    public List<Pagamento> listar() {
-        return pagamentoRepository.listAll();
+    private String tratarNumCartao (String numCartao){
+        return numCartao.replaceAll("[^\\d]", "");
     }
+
 }
