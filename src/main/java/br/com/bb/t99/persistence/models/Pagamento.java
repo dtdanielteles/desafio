@@ -33,6 +33,13 @@ public class Pagamento {
     @Column(name = "valor_pagamento")
     private BigDecimal valorPagamento;
 
+    public Pagamento() {
+    }
+
+    public Pagamento(Long id) {
+        this.id = id;
+    }
+
     public Pagamento(long id, String numCartao, String cpfCnpjCliente, int mesVencCartao, int anoVencCartao, String cvv, BigDecimal valorPagamento, int tipoPessoa) {
         this.id = id;
         this.numCartao = numCartao;

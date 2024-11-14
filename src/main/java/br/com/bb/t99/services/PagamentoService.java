@@ -1,21 +1,21 @@
 package br.com.bb.t99.services;
 
-import br.com.bb.t99.persistence.dao.PagamentoDao;
 import br.com.bb.t99.persistence.models.Pagamento;
 import br.com.bb.t99.persistence.repository.PagamentoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.List;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class PagamentoService {
+
+    private static final Logger LOGGER = Logger.getLogger(PagamentoService.class.getName());
 
     @Inject
     PagamentoRepository pagamentoRepository;
@@ -24,7 +24,12 @@ public class PagamentoService {
 
     }
 
-    public void publicarPagamento(Pagamento pagamento){
+    @Transactional
+    public Pagamento publicarPagamento(Pagamento pagamento){
+        if (pagamento == null) {
+            throw new IllegalArgumentException("Pagamento não pode ser nulo");
+        }
+
         if (validarNumCartao(pagamento.getNumCartao())){
             pagamento.setNumCartao(tratarNumCartao(pagamento.getNumCartao()));
         }
@@ -37,10 +42,12 @@ public class PagamentoService {
         }
 
         pagamentoRepository.persist(pagamento);
+        LOGGER.info("Pagamento enviado com sucesso");
+        return pagamento;
     }
 
     private boolean validarValorPagamento (BigDecimal valorPagamento) {
-        if (valorPagamento.compareTo(BigDecimal.ZERO) <= 0) {
+        if (valorPagamento == null || valorPagamento.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Valor do pagamento inválido");
         }
         return true;
@@ -52,7 +59,7 @@ public class PagamentoService {
     }
 
     private void validarCvv(String cvv) {
-        if (cvv == null || cvv.length() > 4 || (cvv != null && !(cvv.matches("\\d+")))) {
+        if (cvv == null || cvv.length() > 4 || !(cvv.matches("\\d+"))) {
             throw new RuntimeException("Formato do CVV inválido");
         }
     }
@@ -68,7 +75,7 @@ public class PagamentoService {
     private void validarMesVencCartao(int mesVencCartao, int anoVencCartao) {
         if (mesVencCartao < 1 || mesVencCartao > 12) {
             throw new RuntimeException("Mês de vencimento inválido");
-        } else if (mesVencCartao < LocalDate.now().getMonthValue() && anoVencCartao < LocalDate.now().getYear()) {
+        } else if (mesVencCartao < LocalDate.now().getMonthValue() && anoVencCartao == LocalDate.now().getYear()) {
             throw new RuntimeException("Cartão vencido");
         }
     }

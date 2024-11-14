@@ -51,17 +51,17 @@ public class PagamentoDao {
         }
     }
 
-    @Transactional
-    public int publicarPagamento(Pagamento pagamento) {
-        String nameQuery = "PUBLICAR-PAGAMENTO";
-        return insertOrUpdate(pagamento, nameQuery);
-    }
+//    @Transactional
+//    public int publicarPagamento(Pagamento pagamento) {
+//        String nameQuery = "PUBLICAR-PAGAMENTO";
+//        return insertOrUpdate(pagamento, nameQuery);
+//    }
 
-    private int insertOrUpdate(Pagamento pagamento, String nameQuery){
-        Query query = em
-                .createNamedQuery(nameQuery);
-
-        query.setParameter("idPagamento", pagamento.getId());
-        //query.setParameter("")
-    }
+//    private int insertOrUpdate(Pagamento pagamento, String nameQuery){
+//        Query query = em
+//                .createNamedQuery(nameQuery);
+//
+//        query.setParameter("idPagamento", pagamento.getId());
+//        //query.setParameter("")
+//    }
 }

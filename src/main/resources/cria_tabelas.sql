@@ -5,6 +5,7 @@ CREATE TABLE PAGAMENTOS (
     cpf_cnpj_cliente VARCHAR(14) NOT NULL,
     mes_venc_cartao INTEGER NOT NULL,
     ano_venc_cartao INTEGER NOT NULL,
-
-
-)
+    cvv VARCHAR(4) NOT NULL,
+    valor_pagamento DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (id)
+);
