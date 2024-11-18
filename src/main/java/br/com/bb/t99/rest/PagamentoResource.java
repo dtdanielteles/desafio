@@ -1,5 +1,6 @@
 package br.com.bb.t99.rest;
 
+import br.com.bb.t99.metrics.Metricas;
 import br.com.bb.t99.persistence.models.Pagamento;
 import br.com.bb.t99.services.PagamentoService;
 import jakarta.inject.Inject;
@@ -16,12 +17,19 @@ public class PagamentoResource {
     @Inject
     PagamentoService service;
 
+    @Inject
+    Metricas metrics;
+
     @POST
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
     public Response publicarPagamento(Pagamento pagamento){
+        Pagamento pagamentoCriado = service.publicarPagamento(pagamento);
+        metrics.incrementPagamentoCount();
+        metrics.timePagamentoProcessing();
+        metrics.meterPagamento();
         return Response.status(Response.Status.CREATED)
-                .entity(service.publicarPagamento(pagamento))
+                .entity(pagamentoCriado.getId())
                 .build();
     }
 

@@ -8,4 +8,4 @@ CREATE TABLE Pagamentos (
     cvv VARCHAR(4) NOT NULL,
     valor_pagamento DECIMAL(10,2) NOT NULL,
     PRIMARY KEY (id)
-); ENGINE=InnoDB;
+) ENGINE=InnoDB;
