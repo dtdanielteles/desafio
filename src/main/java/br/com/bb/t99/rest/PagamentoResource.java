@@ -28,6 +28,7 @@ public class PagamentoResource {
         metrics.incrementPagamentoCount();
         metrics.timePagamentoProcessing();
         metrics.meterPagamento();
+
         return Response.status(Response.Status.CREATED)
                 .entity(pagamentoCriado.getId())
                 .build();
@@ -38,4 +39,28 @@ public class PagamentoResource {
     public List<Pagamento> listar() {
         return service.listar();
     }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Pagamento buscarPorId(@PathParam("id") int id) {
+        return service.buscaPorId(id);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deletarPagamento(@PathParam("id") int id) {
+        service.deletarPagamento(id);
+        return Response.status(Response.Status.OK).build();
+    }
+
+//    @PUT
+//    @Path("/{id}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response editarPagamento(Pagamento pagamento, @PathParam("id") int id) {
+//        service.editarPagamento(id);
+//        return Response.status(Response.Status.OK).entity(service.editarPagamento(pagamento, id)).build();
+//    }
 }

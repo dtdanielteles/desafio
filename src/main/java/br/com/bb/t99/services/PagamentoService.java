@@ -1,5 +1,8 @@
 package br.com.bb.t99.services;
 
+import br.com.bb.t99.exception.CampoEmBrancoException;
+import br.com.bb.t99.exception.CampoInvalidoException;
+import br.com.bb.t99.exception.NaoAutorizadoException;
 import br.com.bb.t99.persistence.models.Pagamento;
 import br.com.bb.t99.persistence.repository.PagamentoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,17 +24,28 @@ public class PagamentoService {
     PagamentoRepository pagamentoRepository;
 
     public List<Pagamento> listar() {
+        LOGGER.info("Listando pagamentos");
         return pagamentoRepository.listAll();
     }
 
-    void validarPagamento(Pagamento pagamento) {
 
+    public Pagamento buscaPorId(int id) {
+        return pagamentoRepository.findById((long) id);
+    }
+
+    @Transactional
+    public boolean deletarPagamento(int id) {
+        boolean persiste = pagamentoRepository.deleteById((long) id);
+        if (persiste) {
+            LOGGER.info("Pagamento deletado.");
+        }
+        return persiste;
     }
 
     @Transactional
     public Pagamento publicarPagamento(Pagamento pagamento){
         if (pagamento == null) {
-            throw new IllegalArgumentException("Pagamento não pode ser nulo");
+            throw new CampoEmBrancoException("Informe os dados do pagamento");
         }
 
         if (validarNumCartao(pagamento.getNumCartao())){
@@ -63,7 +77,7 @@ public class PagamentoService {
 
         // Verificar se o cpfCnpjCliente tem 14 dígitos
         if (cpfCnpjCliente.length() != 14) {
-            throw new RuntimeException("CNPJ inválido.");
+            throw new CampoInvalidoException("CNPJ inválido.");
         }
 
         // Calcular os dígitos verificadores
@@ -96,7 +110,7 @@ public class PagamentoService {
         dig14 = (r == 0 || r == 1) ? '0' : (char) ((11 - r) + 48);
 
         if (!(dig13 == cpfCnpjCliente.charAt(12)) && (dig14 == cpfCnpjCliente.charAt(13))) {
-            throw new RuntimeException("CNPJ inválido");
+            throw new CampoInvalidoException("CNPJ inválido");
         }
     }
 
@@ -114,12 +128,12 @@ public class PagamentoService {
 
         // Verificar se o cpfCnpjCliente tem 11 dígitos
         if (cpfCnpjCliente.length() != 11) {
-            throw new RuntimeException("CPF inválido.");
+            throw new CampoInvalidoException("CPF inválido.");
         }
 
         // Verificar se todos os dígitos são iguais
         if (cpfCnpjCliente.matches("(\\d)\\1{10}")) {
-            throw new RuntimeException("CPF inválido.");
+            throw new CampoInvalidoException("CPF inválido.");
         }
 
         // Calcular os dígitos verificadores
@@ -145,7 +159,7 @@ public class PagamentoService {
         r = 11 - (sm % 11);
         char dig11 = (r == 10 || r == 11) ? '0' : (char) (r + 48);
         if(!((dig10 == cpfCnpjCliente.charAt(9)) && (dig11 == cpfCnpjCliente.charAt(10)))) {
-            throw new RuntimeException("CPF Inválido.");
+            throw new CampoInvalidoException("CPF Inválido.");
         }
     }
 
@@ -159,7 +173,7 @@ public class PagamentoService {
 
     private boolean validarValorPagamento (BigDecimal valorPagamento) {
         if (valorPagamento == null || valorPagamento.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Valor do pagamento inválido");
+            throw new CampoInvalidoException("Valor do pagamento inválido");
         }
         return true;
     }
@@ -171,29 +185,29 @@ public class PagamentoService {
 
     private void validarCvv(String cvv) {
         if (cvv == null || cvv.length() > 4 || !(cvv.matches("\\d+"))) {
-            throw new RuntimeException("Formato do CVV inválido");
+            throw new CampoInvalidoException("Formato do CVV inválido");
         }
     }
 
     private void validarAnoVencCartao(int anoVencCartao) {
         if (anoVencCartao < LocalDate.now().getYear()) {
-            throw new RuntimeException("Cartão vencido");
-        } else if (anoVencCartao > 9999 ) {
-            throw new RuntimeException("Ano de vencimento inválido");
+            throw new NaoAutorizadoException("Cartão vencido");
+        } else if (anoVencCartao > 9999) {
+            throw new CampoInvalidoException("Ano de vencimento inválido");
         }
     }
 
     private void validarMesVencCartao(int mesVencCartao, int anoVencCartao) {
         if (mesVencCartao < 1 || mesVencCartao > 12) {
-            throw new RuntimeException("Mês de vencimento inválido");
+            throw new CampoInvalidoException("Mês de vencimento inválido");
         } else if (mesVencCartao < LocalDate.now().getMonthValue() && anoVencCartao == LocalDate.now().getYear()) {
-            throw new RuntimeException("Cartão vencido");
+            throw new NaoAutorizadoException("Cartão vencido");
         }
     }
 
     private void validarTipoPessoa(int tipoPessoa) {
         if (tipoPessoa < 1 || tipoPessoa > 2) {
-            throw new RuntimeException("Tipo de pessoa inválido");
+            throw new CampoInvalidoException("Tipo de pessoa inválido");
         }
     }
 
@@ -225,7 +239,7 @@ public class PagamentoService {
         if (soma % 10 == 0) {
             return true;
         } else {
-            throw new RuntimeException("Numero do Cartão Inválido");
+            throw new CampoInvalidoException("Numero do Cartão Inválido");
         }
     }
 
@@ -233,4 +247,7 @@ public class PagamentoService {
         return numCartao.replaceAll("[^\\d]", "");
     }
 
+//    public Pagamento editarPagamento(Pagamento pagamento, int id) {
+//        return pagamentoRepository.;
+//    }
 }
