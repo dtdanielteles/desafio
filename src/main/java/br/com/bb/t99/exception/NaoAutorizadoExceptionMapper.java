@@ -17,6 +17,4 @@ public class NaoAutorizadoExceptionMapper implements ExceptionMapper<NaoAutoriza
         LOGGER.log(Level.ERROR, exception.getMessage(), exception);
         return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse("Pagamento não autorizado", exception.getMessage())).build();
     }
-
-
 }

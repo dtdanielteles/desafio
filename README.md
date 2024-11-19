@@ -1,5 +1,14 @@
 # desafio-quarkus
 
+## tasks
+	• Configurar para rodar em container (Docker)
+	• Disponibilizar no código a geração de uma métrica Prometheus.
+	• Corrigir validação do cartão
+	• Validação do valor(aceitar somente com ponto)
+	• Validação do vencimento(não aceitar caracteres que não são digitos)
+
+Capturar com.fasterxml.jackson.core.JsonParseException, formato da requisição
+
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.

@@ -1,8 +1,9 @@
 package br.com.bb.t99.rest;
 
-import br.com.bb.t99.metrics.Metricas;
+//import br.com.bb.t99.metrics.Metricas;
 import br.com.bb.t99.persistence.models.Pagamento;
 import br.com.bb.t99.services.PagamentoService;
+import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -17,17 +18,18 @@ public class PagamentoResource {
     @Inject
     PagamentoService service;
 
-    @Inject
-    Metricas metrics;
+    //@Inject
+    //Metricas metrics;
 
     @POST
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
     public Response publicarPagamento(Pagamento pagamento){
         Pagamento pagamentoCriado = service.publicarPagamento(pagamento);
-        metrics.incrementPagamentoCount();
-        metrics.timePagamentoProcessing();
-        metrics.meterPagamento();
+
+//        metrics.incrementPagamentoCount();
+//        metrics.timePagamentoProcessing();
+//        metrics.meterPagamento();
 
         return Response.status(Response.Status.CREATED)
                 .entity(pagamentoCriado.getId())

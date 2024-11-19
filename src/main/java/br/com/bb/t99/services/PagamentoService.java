@@ -3,12 +3,15 @@ package br.com.bb.t99.services;
 import br.com.bb.t99.exception.CampoEmBrancoException;
 import br.com.bb.t99.exception.CampoInvalidoException;
 import br.com.bb.t99.exception.NaoAutorizadoException;
+import br.com.bb.t99.exception.NaoEncontradoException;
 import br.com.bb.t99.persistence.models.Pagamento;
 import br.com.bb.t99.persistence.repository.PagamentoRepository;
+import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -24,13 +27,25 @@ public class PagamentoService {
     PagamentoRepository pagamentoRepository;
 
     public List<Pagamento> listar() {
-        LOGGER.info("Listando pagamentos");
-        return pagamentoRepository.listAll();
+        List<Pagamento> lista = pagamentoRepository.listAll();
+
+        if (lista.isEmpty()) {
+            throw new NaoEncontradoException("Não existem pagamentos registrados");
+        } else {
+            LOGGER.info("Listando pagamentos");
+            return lista;
+        }
     }
 
-
     public Pagamento buscaPorId(int id) {
-        return pagamentoRepository.findById((long) id);
+        Pagamento pagamento = pagamentoRepository.findById((long) id);
+
+        if (pagamento != null){
+            LOGGER.info("Pagamento listado");
+            return pagamento;
+        } else {
+            throw new NaoEncontradoException("Não encontrado pagamento com o id especificado");
+        }
     }
 
     @Transactional
@@ -38,20 +53,20 @@ public class PagamentoService {
         boolean persiste = pagamentoRepository.deleteById((long) id);
         if (persiste) {
             LOGGER.info("Pagamento deletado.");
-        }
-        return persiste;
+            return persiste;
+        } else {
+            throw new NaoEncontradoException("Não encontrado pagamento com o id especificado");        }
     }
 
     @Transactional
     public Pagamento publicarPagamento(Pagamento pagamento){
+
         if (pagamento == null) {
             throw new CampoEmBrancoException("Informe os dados do pagamento");
         }
 
-        if (validarNumCartao(pagamento.getNumCartao())){
-            pagamento.setNumCartao(tratarNumCartao(pagamento.getNumCartao()));
-        }
         validarTipoPessoa(pagamento.getTipoPessoa());
+
         if (pagamento.getTipoPessoa() == 1) {
             validarCpf(pagamento.getCpfCnpjCliente());
             pagamento.setCpfCnpjCliente(tratarCpf(pagamento.getCpfCnpjCliente()));
@@ -59,16 +74,25 @@ public class PagamentoService {
             validarCnpj(pagamento.getCpfCnpjCliente());
             pagamento.setCpfCnpjCliente(tratarCnpj(pagamento.getCpfCnpjCliente()));
         }
+
+        // Validações do cartão
+//        if (validarNumCartao(pagamento.getNumCartao())) {
+//            pagamento.setNumCartao(tratarNumCartao(pagamento.getNumCartao()));
+//        }
+        pagamento.setNumCartao(validarNumCartao(pagamento.getNumCartao()));
+
         validarAnoVencCartao(pagamento.getAnoVencCartao());
         validarMesVencCartao(pagamento.getMesVencCartao(), pagamento.getAnoVencCartao());
         validarCvv(pagamento.getCvv());
-        if (validarValorPagamento(pagamento.getValorPagamento())){
+
+        if (validarValorPagamento(pagamento.getValorPagamento())) {
             pagamento.setValorPagamento(tratarValorPagamento(pagamento.getValorPagamento()));
         }
 
         pagamentoRepository.persist(pagamento);
         LOGGER.info("Pagamento enviado com sucesso");
         return pagamento;
+
     }
 
     private void validarCnpj(String cpfCnpjCliente) {
@@ -211,36 +235,15 @@ public class PagamentoService {
         }
     }
 
-    private static boolean validarNumCartao(String numCartao) {
+    private static String validarNumCartao(String numCartao) {
         // Remover todos os caracteres não numéricos
         String numLimpo = numCartao.replaceAll("[^\\d]", "");
 
-        // Verificar se o número tem entre 13 e 19 dígitos
-        if (numLimpo.length() < 13 || numLimpo.length() > 19) {
-            throw new RuntimeException("Número do cartão inválido");
+        // Verificar se o número tem entre 16 dígitos
+        if (numLimpo.length() != 16) {
+            throw new CampoInvalidoException("Número do cartão inválido");
         }
-
-        // Aplicar o algoritmo de Luhn
-        int soma = 0;
-        boolean alternar = false;
-        for (int i = numLimpo.length() - 1; i >= 0; i--) {
-            int n = Integer.parseInt(numLimpo.substring(i, i + 1));
-            if (alternar) {
-                n *= 2;
-                if (n > 9) {
-                    n -= 9;
-                }
-            }
-            soma += n;
-            alternar = !alternar;
-        }
-
-        // Verificar se a soma é múltiplo de 10
-        if (soma % 10 == 0) {
-            return true;
-        } else {
-            throw new CampoInvalidoException("Numero do Cartão Inválido");
-        }
+        return numLimpo;
     }
 
     private String tratarNumCartao (String numCartao){
