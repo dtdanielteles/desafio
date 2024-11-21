@@ -12,11 +12,10 @@ Este microsserviço foi desenvolvido para receber dados de pagamentos fictícios
 - Configuração para rodar o microsserviço em container (Dockerfile, docker-compose).
 - Geração de métricas Prometheus através do endpoint `/metrics`.
 
-## Tecnologias Utilizadas
+## Ferramentas Utilizadas
 - Java 21
 - Quarkus 3.15
 - MySQL
-- Docker
 - Maven 3.9.5
 
 ## Como Executar o Programa
@@ -25,13 +24,15 @@ Este microsserviço foi desenvolvido para receber dados de pagamentos fictícios
    git clone https://github.com/dtdanielteles/desafio-quarkus.git
    cd desafio-quarkus
     ```
-2. Configure o banco de dados MySQL e ajuste as configurações no arquivo `application.properties` .
+2. Configure o banco de dados MySQL criando uma database `pagamentos` 
 
-3. Compile e execute o microsserviço
+4. Insira o endereço e as credenciais do banco no arquivo `application.properties` .
+
+5. Compile e execute o microsserviço
    ```sh
    mvn compile quarkus:dev
    ```
-4. O microsserviço estará disponível em `http://localhost:8080`.
+5. O microsserviço estará disponível em `http://localhost:8080`.
 
 ## Endpoints
 - `POST /pagamento`: Recebe os dados de pagamento em formato JSON e armazena no banco de dados.
