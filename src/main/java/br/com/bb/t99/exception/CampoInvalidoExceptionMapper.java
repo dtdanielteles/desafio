@@ -1,6 +1,5 @@
 package br.com.bb.t99.exception;
 
-import br.com.bb.t99.services.PagamentoService;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;

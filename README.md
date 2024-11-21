@@ -15,12 +15,8 @@ Este microsserviço foi desenvolvido para receber dados de pagamentos fictícios
 ## Tecnologias Utilizadas
 - Java 21
 - Quarkus 3.15
-- JAX-RS
 - MySQL
 - Docker
-- Docker Compose
-- Prometheus
-- Swagger
 - Maven 3.9.5
 
 ## Como Executar o Programa
@@ -44,5 +40,6 @@ Este microsserviço foi desenvolvido para receber dados de pagamentos fictícios
 - `DELETE /pagamento/{id}`: Deleta os dados de pagamento armazenados com o ID especificado.
 - `GET /metrics`: Exibe as métricas Prometheus do microsserviço.
 - `/swagger-ui`: Interface Swagger para visualizar e testar os endpoints.
+- `/health`: Disponibiliza o status da aplicação
 
 

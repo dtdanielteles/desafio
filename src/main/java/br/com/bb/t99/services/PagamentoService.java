@@ -6,12 +6,10 @@ import br.com.bb.t99.exception.NaoAutorizadoException;
 import br.com.bb.t99.exception.NaoEncontradoException;
 import br.com.bb.t99.persistence.models.Pagamento;
 import br.com.bb.t99.persistence.repository.PagamentoRepository;
-import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -236,7 +234,7 @@ public class PagamentoService {
         // Remover todos os caracteres não numéricos
         String numLimpo = numCartao.replaceAll("[^\\d]", "");
 
-        // Verificar se o número tem entre 16 dígitos
+        // Verificar se o número tem 16 dígitos
         if (numLimpo.length() != 16) {
             throw new CampoInvalidoException("Número do cartão inválido");
         }
@@ -247,7 +245,4 @@ public class PagamentoService {
         return numCartao.replaceAll("[^\\d]", "");
     }
 
-//    public Pagamento editarPagamento(Pagamento pagamento, int id) {
-//        return pagamentoRepository.;
-//    }
 }
