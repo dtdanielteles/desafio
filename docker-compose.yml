@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  mysql-db:
+    driver: bridge
+
 services:
   desafio-quarkus:
     image: quarkus/desafio-quarkus-jvm:latest
@@ -21,10 +25,9 @@ services:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     environment:
-     # - MYSQL_USER=root
-      MYSQL_ROOT_PASSWORD: 12345678
-      #- MYSQL_PASSWORD=12345678
-      MYSQL_DATABASE: pagamentos
+      - MYSQL_ROOT_PASSWORD=12345678
+      - MYSQL_PASSWORD=12345678
+      - MYSQL_DATABASE=pagamentos
     volumes:
       - mysql.quarkus:/var/lib/mysql
     ports:
@@ -32,9 +35,6 @@ services:
     networks:
       - mysql-db
 
-networks:
-  mysql-db:
-    driver: bridge
 
 volumes:
   mysql.quarkus:

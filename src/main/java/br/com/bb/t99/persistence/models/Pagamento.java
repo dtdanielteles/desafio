@@ -1,11 +1,8 @@
 package br.com.bb.t99.persistence.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 
 import java.math.BigDecimal;
-import java.time.Month;
-import java.time.Year;
 
 @Entity
 @Table(name = "Pagamentos")
