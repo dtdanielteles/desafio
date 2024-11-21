@@ -9,7 +9,6 @@ Este microsserviço foi desenvolvido para receber dados de pagamentos fictícios
 - Armazenamento dos dados de pagamento em um banco de dados relacional (MySQL).
 - Criação de uma tabela adequada para armazenar as informações de pagamento.
 - Implementação de endpoints HTTP utilizando JAX-RS para envio, consulta e deleção dos dados de pagamento.
-- Configuração para rodar o microsserviço em container (Dockerfile, docker-compose).
 - Geração de métricas Prometheus através do endpoint `/metrics`.
 
 ## Ferramentas Utilizadas
