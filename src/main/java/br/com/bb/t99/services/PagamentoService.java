@@ -75,10 +75,7 @@ public class PagamentoService {
             pagamento.setCpfCnpjCliente(tratarCnpj(pagamento.getCpfCnpjCliente()));
         }
 
-        // Validações do cartão
-//        if (validarNumCartao(pagamento.getNumCartao())) {
-//            pagamento.setNumCartao(tratarNumCartao(pagamento.getNumCartao()));
-//        }
+
         pagamento.setNumCartao(validarNumCartao(pagamento.getNumCartao()));
 
         validarAnoVencCartao(pagamento.getAnoVencCartao());
@@ -133,7 +130,7 @@ public class PagamentoService {
         r = sm % 11;
         dig14 = (r == 0 || r == 1) ? '0' : (char) ((11 - r) + 48);
 
-        if (!(dig13 == cpfCnpjCliente.charAt(12)) && (dig14 == cpfCnpjCliente.charAt(13))) {
+        if (!(dig13 == cpfCnpjCliente.charAt(12) && dig14 == cpfCnpjCliente.charAt(13))) {
             throw new CampoInvalidoException("CNPJ inválido");
         }
     }
@@ -208,7 +205,7 @@ public class PagamentoService {
     }
 
     private void validarCvv(String cvv) {
-        if (cvv == null || cvv.length() > 4 || !(cvv.matches("\\d+"))) {
+        if (cvv == null || cvv.length() < 3 || cvv.length() > 4 || !(cvv.matches("\\d+"))) {
             throw new CampoInvalidoException("Formato do CVV inválido");
         }
     }

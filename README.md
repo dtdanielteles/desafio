@@ -1,71 +1,48 @@
-# desafio-quarkus
+# Desafio de Programação em Java Quarkus - Microsserviço de Recebimento e Armazenamento de Pagamento com Cartão de Crédito
 
-## tasks
-	• Configurar para rodar em container (Docker)
-	• Disponibilizar no código a geração de uma métrica Prometheus.
-	• Corrigir validação do cartão
-	• Validação do valor(aceitar somente com ponto)
-	• Validação do vencimento(não aceitar caracteres que não são digitos)
+## Descrição
+Este microsserviço foi desenvolvido para receber dados de pagamentos fictícios realizados com cartão de crédito, validar esses dados e armazená-los em um banco de dados relacional. Além disso, o microsserviço fornece endpoints HTTP para receber, consultar e deletar os dados de pagamento armazenados.
 
-Capturar com.fasterxml.jackson.core.JsonParseException, formato da requisição
+## Requisitos Atendidos
+- Utilização do framework Quarkus para criar o microsserviço Java.
+- Função para receber e validar os dados do pagamento em formato JSON.
+- Armazenamento dos dados de pagamento em um banco de dados relacional (MySQL).
+- Criação de uma tabela adequada para armazenar as informações de pagamento.
+- Implementação de endpoints HTTP utilizando JAX-RS para envio, consulta e deleção dos dados de pagamento.
+- Configuração para rodar o microsserviço em container (Dockerfile, docker-compose).
+- Geração de métricas Prometheus através do endpoint `/metrics`.
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## Tecnologias Utilizadas
+- Java 21
+- Quarkus 3.15
+- JAX-RS
+- MySQL
+- Docker
+- Docker Compose
+- Prometheus
+- Swagger
+- Maven 3.9.5
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Como Executar o Programa
+1. Clone o repositório:
+   ```sh
+   git clone https://github.com/dtdanielteles/desafio-quarkus.git
+   cd desafio-quarkus
+    ```
+2. Configure o banco de dados MySQL e ajuste as configurações no arquivo `application.properties` .
 
-## Running the application in dev mode
+3. Compile e execute o microsserviço
+   ```sh
+   mvn compile quarkus:dev
+   ```
+4. O microsserviço estará disponível em `http://localhost:8080`.
 
-You can run your application in dev mode that enables live coding using:
+## Endpoints
+- `POST /pagamento`: Recebe os dados de pagamento em formato JSON e armazena no banco de dados.
+- `GET /pagamento`: Retorna todos os dados de pagamentos armazenados.
+- `GET /pagamento/{id}`: Consulta os dados de pagamento armazenados com o ID especificado.
+- `DELETE /pagamento/{id}`: Deleta os dados de pagamento armazenados com o ID especificado.
+- `GET /metrics`: Exibe as métricas Prometheus do microsserviço.
+- `/swagger-ui`: Interface Swagger para visualizar e testar os endpoints.
 
-```shell script
-./mvnw compile quarkus:dev
-```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
-
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
-```
-
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/desafio-quarkus-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)

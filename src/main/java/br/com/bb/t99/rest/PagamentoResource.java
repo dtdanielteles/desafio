@@ -1,9 +1,8 @@
 package br.com.bb.t99.rest;
 
-//import br.com.bb.t99.metrics.Metricas;
+import br.com.bb.t99.metrics.Metricas;
 import br.com.bb.t99.persistence.models.Pagamento;
 import br.com.bb.t99.services.PagamentoService;
-import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -18,19 +17,15 @@ public class PagamentoResource {
     @Inject
     PagamentoService service;
 
-    //@Inject
-    //Metricas metrics;
+    @Inject
+    Metricas metrics;
 
     @POST
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
     public Response publicarPagamento(Pagamento pagamento){
         Pagamento pagamentoCriado = service.publicarPagamento(pagamento);
-
-//        metrics.incrementPagamentoCount();
-//        metrics.timePagamentoProcessing();
-//        metrics.meterPagamento();
-
+        metrics.incrementPagamentoCount();
         return Response.status(Response.Status.CREATED)
                 .entity(pagamentoCriado.getId())
                 .build();
@@ -54,15 +49,7 @@ public class PagamentoResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deletarPagamento(@PathParam("id") int id) {
         service.deletarPagamento(id);
+        metrics.incrementPagamentoDeletadoCount();
         return Response.status(Response.Status.OK).build();
     }
-
-//    @PUT
-//    @Path("/{id}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response editarPagamento(Pagamento pagamento, @PathParam("id") int id) {
-//        service.editarPagamento(id);
-//        return Response.status(Response.Status.OK).entity(service.editarPagamento(pagamento, id)).build();
-//    }
 }

@@ -8,6 +8,8 @@ services:
       dockerfile: src/main/docker/Dockerfile.${QUARKUS_MODE:-jvm}
     environment:
       QUARKUS_DATASOURCE_URL: jdbc:mysql://mysql-quarkus:3306/pagamentos?autoReconnect=true
+      QUARKUS_DATASOURCE_USERNAME: root
+      QUARKUS_DATASOURCE_PASSWORD: 12345678
     networks:
       - mysql-db
     ports:
