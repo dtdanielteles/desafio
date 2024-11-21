@@ -1,8 +1,7 @@
 version: '3.8'
 
-networks:
-  mysql-db:
-    driver: bridge
+#Ainda não implementado
+#Falha na comunicação do container Quarkus com o container MySQL
 
 services:
   desafio-quarkus:
@@ -35,6 +34,9 @@ services:
     networks:
       - mysql-db
 
+networks:
+  mysql-db:
+    driver: bridge
 
 volumes:
   mysql.quarkus:
